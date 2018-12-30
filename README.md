@@ -11,7 +11,8 @@ Please let me now if it works on OSX.
 
 ### PyPa
 
-For now, *mpdnotify* is not a PyPa's package.
+You can install `mpdnotify` in a single command :
+`pip install mpdnotify`
 
 ### Manual
 

@@ -10,18 +10,18 @@ Priority : command-line argument > config > environment > hardcoded
 """
 
 __preferences__ = {
-        "config": 'mpdnotifyrc',
-        "host": 'localhost',
-        "port": '6600',
-        "appname": 'mpd',
-        "musicdir": '',
-        }
+    "config": "mpdnotifyrc",
+    "host": "localhost",
+    "port": "6600",
+    "appname": "mpd",
+    "musicdir": "",
+}
 
 
 class GlobalParser(object):
     def __init__(self):
         for _ in __preferences__:
-            setattr(self, _, '')
+            setattr(self, _, "")
 
         # self.empty_pref will help us to save the unset preferences
         self.empty_pref = []
@@ -48,7 +48,7 @@ class GlobalParser(object):
         # last try with default options (corresponding to __preferences__'
         # items)
         for _ in self.empty_pref[:]:
-            if __preferences__.get(_) != '':
+            if __preferences__.get(_) != "":
                 setattr(self, _, __preferences__.get(_))
                 self.empty_pref.remove(_)
             else:
@@ -79,43 +79,21 @@ class GlobalParser(object):
 
     def _parsing_arguments(self):
         parser = argparse.ArgumentParser()
+        parser.add_argument("-a", "--appname", metavar="mpd")
+        parser.add_argument("-c", "--config", metavar="mpdnotifyrc")
+        parser.add_argument("--host", metavar="localhost", type=str)
         parser.add_argument(
-                "-a",
-                "--appname",
-                metavar="mpd"
-                )
-        parser.add_argument(
-                "-c",
-                "--config",
-                metavar="mpdnotifyrc"
-                )
-        parser.add_argument(
-                "--host",
-                metavar="localhost",
-                type=str
-                )
-        parser.add_argument(
-                "-m",
-                "--musicdir",
-                metavar="/path/to/your/mpd/dir"
-                )
-        parser.add_argument(
-                "-p",
-                "--port",
-                metavar="6600",
-                type=int
-                )
-        parser.add_argument(
-                "-o",
-                "--oneshot",
-                action="store_true"
-                )
+            "-m", "--musicdir", metavar="/path/to/your/mpd/dir"
+        )
+        parser.add_argument("-p", "--port", metavar="6600", type=int)
+        parser.add_argument("-o", "--oneshot", action="store_true")
         return parser.parse_args()
 
     def _parsing_config(self):
         """
         :type returns: dict
         """
+
         def _is_file(_file):
             if isinstance(_file, pathlib.PosixPath):
                 return _file.is_file()
@@ -124,24 +102,26 @@ class GlobalParser(object):
 
         cwd_config = pathlib.Path.cwd().joinpath("mpdnotifyrc")
         # first looks at args
-        if not _is_file(cwd_config) and self.config != '':
+        if not _is_file(cwd_config) and self.config != "":
             if not isinstance(self.config, pathlib.Path):
                 self.config = pathlib.Path(self.config)
         # else try to find the config file in the current dir
-        elif _is_file(cwd_config) and self.config == '':
+        elif _is_file(cwd_config) and self.config == "":
             self.config = cwd_config
-        # finally try to looks at the config directory
+            # finally try to looks at the config directory
         else:
             try:
-                config_home = pathlib.Path(environ.get("XDG_CONFIG_HOME"))\
-                        .expanduser()
+                config_home = pathlib.Path(
+                    environ.get("XDG_CONFIG_HOME")
+                ).expanduser()
             except KeyError:
                 config_home = pathlib.Path("~/.config").expanduser()
             finally:
                 config_list = (
-                        pathlib.Path(config_home).joinpath("mpdnotifyrc"),
-                        pathlib.Path(config_home).joinpath("mpdnotify")
-                                                 .joinpath("mpdnotifyrc")
+                    pathlib.Path(config_home).joinpath("mpdnotifyrc"),
+                    pathlib.Path(config_home)
+                    .joinpath("mpdnotify")
+                    .joinpath("mpdnotifyrc"),
                 )
                 for _ in config_list:
                     if _.exists():

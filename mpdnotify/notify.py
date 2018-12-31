@@ -6,7 +6,7 @@ from subprocess import run
 from mpd import MPDClient
 
 
-class MPD():
+class MPD:
     def __init__(self, host, port, music_dir, appname="mpd"):
         self.host = host
         self.port = port
@@ -21,7 +21,7 @@ class MPD():
         self.album = self.get_album()
         self.file = self.get_file()
 
-        self.body, self.notify_run = "", "",
+        self.body, self.notify_run = "", ""
         self.garbagecover = []
 
         #  generates a list of cover name as they are usually found
@@ -53,10 +53,10 @@ class MPD():
                     self.garbagecover.remove(_)
 
     def get_artist(self):
-        return self.mpd.currentsong().get('artist')
+        return self.mpd.currentsong().get("artist")
 
     def get_album(self):
-        return self.mpd.currentsong().get('album')
+        return self.mpd.currentsong().get("album")
 
     def get_cover(self):
         try:
@@ -65,27 +65,38 @@ class MPD():
             music_dir = pathlib.Path(self.music_dir).expanduser()
             parent = music_dir.joinpath(self.file).parent
         except TypeError:
-            return ''
+            return ""
         else:
             for _ in parent.iterdir():
                 if _.name in self.cover_list:
                     return parent.joinpath(_.name)
 
     def get_file(self):
-        return self.mpd.currentsong().get('file')
+        return self.mpd.currentsong().get("file")
 
     def get_title(self):
-        return self.mpd.currentsong().get('title')
+        return self.mpd.currentsong().get("title")
 
     def sendnotify(self, cover=False):
         self.body = "{} ({})".format(self.artist, self.album)
         if self.cover:
-                self.notify_run = \
-                    ["notify-send", "-a", self.appname, "-i",
-                     self.cover.__str__(), self.title, self.body]
+            self.notify_run = [
+                "notify-send",
+                "-a",
+                self.appname,
+                "-i",
+                self.cover.__str__(),
+                self.title,
+                self.body,
+            ]
         else:
-            self.notify_run = \
-                ["notify-send", "-a", self.appname, self.title, self.body]
+            self.notify_run = [
+                "notify-send",
+                "-a",
+                self.appname,
+                self.title,
+                self.body,
+            ]
         try:
             run(self.notify_run)
         except TypeError:
@@ -96,12 +107,10 @@ class MPD():
         im = im.resize((96, 96))
 
         with NamedTemporaryFile(
-                suffix=".png",
-                prefix="mpdnotify-",
-                delete=False
-                ) as resize_cover:
+            suffix=".png", prefix="mpdnotify-", delete=False
+        ) as resize_cover:
             p = pathlib.Path(resize_cover.name)
-            im.save(p, 'png')
+            im.save(p, "png")
 
         self.garbagecover.append(p)
         self.cover = p

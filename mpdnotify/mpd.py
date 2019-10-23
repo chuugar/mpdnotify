@@ -1,25 +1,32 @@
 import socket
 
+
 class MPDClient(object):
-    def __init__(self, host="localhost", port=6600, use_unicode=False):
+    def __init__(self, host="localhost", port=6600):
         self.host = host
         self.port = port
-        self.timeout = 10
-        self.use_unicode = use_unicode
+        self.timeout = None
+        self._sock = None
 
-        self._sock = self._connect_tcp()
-        self._rfile = self._sock.makefile(encoding="utf-8", newline="\n")
+    def _connect_tcp(self, host, port):
+        if not host:
+            host = self.host
+        if not port:
+            port = self.port
 
-
-    def _connect_tcp(self):
         try:
             flags = socket.AI_ADDRCONFIG
         except AttributeError:
             flags = 0
 
-        for res in socket.getaddrinfo(self.host, self.port, socket.AF_UNSPEC,
-                                      socket.SOCK_STREAM, socket.IPPROTO_TCP,
-                                      flags):
+        for res in socket.getaddrinfo(
+            self.host,
+            self.port,
+            socket.AF_UNSPEC,
+            socket.SOCK_STREAM,
+            socket.IPPROTO_TCP,
+            flags,
+        ):
             af, socktype, proto, canonname, sa = res
 
             sock = None
@@ -29,10 +36,38 @@ class MPDClient(object):
                 sock.settimeout(self.timeout)
                 sock.connect(sa)
                 return sock
-            except socket.error as e:
-                err = e
-                if sock is not None:
-                    sock.close()
+            except socket.error:
+                sock.close()
 
-    def _print_socket(self):
-        return self._sock.recv(1024)
+    def _connect_unix(self, path):
+        if not hasattr(socket, "AF_UNIX"):
+            raise ConnectionError(
+                "Unix domain sockets not supported on this platform"
+            )
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.connect(path)
+        return sock
+
+    def _hello(self):
+        self._rfile.readline()
+
+    def connect(self, host=None, port=None):
+        if not host:
+            host = self.host
+        if not port:
+            port = self.port
+        if self._sock is not None:
+            raise ConnectionError("Already connected")
+        if host.startswith("/"):
+            self._sock = self._connect_unix(host)
+        else:
+            self._sock = self._connect_tcp(host, port)
+
+        self._rfile = self._sock.makefile("r", encoding="utf-8", newline="\n")
+        self._wfile = self._sock.makefile("w", encoding="utf-8", newline="\n")
+        self._hello()
+
+    def idle(self):
+        self._wfile.write("idle\tplayer\n")
+        self._wfile.flush()
+        self._rfile.readline()

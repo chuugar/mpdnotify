@@ -8,6 +8,47 @@ class MPDClient(object):
         self.timeout = None
         self._sock = None
 
+        self._fetched = ("currentsong", "status")
+        self._notfetched = ("idle")
+
+    def _write(self, cmd, arg=""):
+        self._wfile.write("{}\t{}\n".format(cmd, arg))
+        self._wfile.flush()
+
+    def _fetch(self, cmd, arg=""):
+        """
+        return : dictionary
+        """
+
+        d = {}
+        if not cmd in self._fetched:
+            raise AttributeError("'{}' is not a valid value".format(cmd))
+        self._write(cmd, arg)
+        for l in self._rfile:
+            if l.startswith("OK"):
+                break
+            else:
+                ds = l.rstrip("\n").split(": ")
+                ds[0] = ds[0].lower()
+                ds[0] = "".join([i for i in ds[0] if i.isalpha()])
+                ds[0] = "".join([i for i in ds[0] if i.isascii()])
+                d.update({ds[0]: ds[1]})
+        return d
+
+    def _no_fetch(self, cmd, arg=""):
+        if not cmd in self._notfetched:
+            raise AttributeError("'{}' is not a valid value".format(cmd))
+        self._write(cmd, arg)
+        self._rfile.readline()
+
+    def _mpd_command(self, cmd, arg=""):
+        if cmd in self._fetched:
+            return self._fetch(cmd, arg)
+        elif cmd in self._notfetched:
+            return self._no_fetch(cmd, arg)
+        else:
+            raise AttributeError("{} is not a valid command".format(cmd))
+
     def _connect_tcp(self, host, port):
         if not host:
             host = self.host
@@ -48,9 +89,6 @@ class MPDClient(object):
         sock.connect(path)
         return sock
 
-    def _hello(self):
-        self._rfile.readline()
-
     def connect(self, host=None, port=None):
         if not host:
             host = self.host
@@ -65,9 +103,9 @@ class MPDClient(object):
 
         self._rfile = self._sock.makefile("r", encoding="utf-8", newline="\n")
         self._wfile = self._sock.makefile("w", encoding="utf-8", newline="\n")
-        self._hello()
-
-    def idle(self):
-        self._wfile.write("idle\tplayer\n")
-        self._wfile.flush()
         self._rfile.readline()
+
+    def status_to_attr(self, d):
+        """create attribute from dictionnarie"""
+        for k in d:
+            setattr(self, k, d[k])

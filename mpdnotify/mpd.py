@@ -11,6 +11,7 @@ class MPDClient(object):
         self._fetched = ("currentsong", "status")
         self._notfetched = ("idle")
 
+
     def _write(self, cmd, arg=""):
         self._wfile.write("{}\t{}\n".format(cmd, arg))
         self._wfile.flush()
@@ -104,8 +105,11 @@ class MPDClient(object):
         self._rfile = self._sock.makefile("r", encoding="utf-8", newline="\n")
         self._wfile = self._sock.makefile("w", encoding="utf-8", newline="\n")
         self._rfile.readline()
+        self.reload()
 
-    def status_to_attr(self, d):
-        """create attribute from dictionnarie"""
+    def reload(self, d=None):
+        """create instance attribute from dictionary"""
+        if d == None:
+            d = self._mpd_command("currentsong")
         for k in d:
             setattr(self, k, d[k])

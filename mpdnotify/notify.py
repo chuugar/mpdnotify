@@ -35,6 +35,8 @@ class MPD:
                 self.cover_list.append(name.capitalize() + ext)
                 self.cover_list.append(name.capitalize() + ext.upper())
 
+        self.cover = self.get_cover()
+
     def clean_covers(self, limit=20, force=False):
         """ Clean useless covers' files
         since resized covers' images are saved within a named temporary file

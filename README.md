@@ -6,12 +6,12 @@ Notifies when mpd's song changes.
 
 ## Installation
 
-It has been test on Debian 9.5, it shall work on any other Linux distribution with Python >= 3.2.
+It has been tested on Debian 9.5, it shall work on any other Linux distribution with Python >= 3.2.
 Please let me now if it works on OSX.
 
 ### PyPa
 
-You can install `mpdnotify` in a single command :
+You can install `mpdnotify` in a single command:
 `pip install mpdnotify`
 
 ### Manual
@@ -33,7 +33,8 @@ pip3 install -r requirements.txt -e .
 
 ## Usage
 
-A few arguments can be passed to mpdnotify :
+A few arguments can be passed to mpdnotify:
+
 * **-a / --appname** : specifies the app name for notify-send.
 * **-c / --config** : path to the configuration file.
 * **--host** : mpd's address.
@@ -41,7 +42,7 @@ A few arguments can be passed to mpdnotify :
 * **-p / --port** : mpd's server port.
 * **-o / --oneshot** : send a notification and exit immediately.
 
-All this arguments can be save in a configuration file, please see `mpdnotifyrc.sample` for further informations.
+All of these arguments can be save in a configuration file, please see [`mpdnotifyrc.sample`](https://github.com/chuugar/mpdnotify/blob/master/mpdnotifyrc.sample) for further informations.
 
 **Once running, `mpdnotify` will wait for the next song to send a notification** (unless **-o / --oneshot** has been passed).
 Cover is used as notification icon if a file (cover/front/album).(png/jpg) is find in the same folder as the music file.
@@ -49,5 +50,5 @@ Cover is used as notification icon if a file (cover/front/album).(png/jpg) is fi
 ## TODO
 
 * Add a test suite.
-* Allow user to change the notification format.
+* Allow the user to change the notification format.
 * If cover cannot be found as an image, look at the tags.

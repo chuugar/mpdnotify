@@ -7,12 +7,15 @@ import pathlib
 
 
 class MPD:
-  def __init__(self, host, port, music_dir, appname, timeout):
+  def __init__(self, host, port, music_dir, appname, timeout, titleformat, bodyformat):
     self.host = host
     self.port = port
     self.music_dir = music_dir
     self.appname = appname
     self.timeout = timeout
+
+    self.titleformat = titleformat
+    self.bodyformat = bodyformat
 
     self.mpd = MPDClient()
     self.mpd.connect(self.host, self.port)
@@ -25,7 +28,7 @@ class MPD:
     self.body, self.notify_run = "", ""
     self.garbagecover = []
 
-    #  generates a list of cover name as they are usually found
+    # generates a list of cover name as they are usually found
     self.cover_list = []
     for name in ("album", "front", "cover"):
       for ext in (".jpg", ".png"):
@@ -45,15 +48,16 @@ class MPD:
     NB : if the cover image is delete too fast the notification pop-up
     might lose its icon
     """
+
     if force:
-      for _ in self.garbagecover:
-        _.unlink()
+      for cover in self.garbagecover:
+        cover.unlink()
     else:
       mid = limit // 2
       if len(self.garbagecover) > limit:
-        for _ in self.garbagecover[0:mid]:
-          _.unlink()
-          self.garbagecover.remove(_)
+        for cover in self.garbagecover[0:mid]:
+          cover.unlink()
+          self.garbagecover.remove(cover)
 
   def get_artist(self):
     return self.mpd.currentsong().get("artist")
@@ -70,9 +74,9 @@ class MPD:
     except TypeError:
       return ""
     else:
-      for _ in parent.iterdir():
-        if _.name in self.cover_list:
-          return parent.joinpath(_.name)
+      for d in parent.iterdir():
+        if d.name in self.cover_list:
+          return parent.joinpath(d.name)
 
   def get_file(self):
     return self.mpd.currentsong().get("file")
@@ -81,7 +85,11 @@ class MPD:
     return self.mpd.currentsong().get("title")
 
   def sendnotify(self, cover=False):
-    self.body = "{} ({})".format(self.artist, self.album)
+    def prepare_format(s):
+      return s.format(title=self.title, album=self.album, artist=self.artist)
+
+    self.title = prepare_format(self.titleformat)
+    self.body = prepare_format(self.bodyformat)
 
     if self.cover:
       self.notify_run = [
@@ -89,9 +97,9 @@ class MPD:
         "-a",
         self.appname,
         "-i",
-        self.cover.__str__(),
+        str(self.cover),
         "-t",
-        self.timeout.__str__(),
+        str(self.timeout),
         self.title,
         self.body,
       ]
@@ -99,9 +107,9 @@ class MPD:
       self.notify_run = [
         "notify-send",
         "-a",
-        self.appname,
+        str(self.appname),
         "-t",
-        self.timeout.__str__(),
+        str(self.timeout),
         self.title,
         self.body,
       ]

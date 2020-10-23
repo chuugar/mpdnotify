@@ -3,7 +3,7 @@ from mpdnotify import config, notify
 
 def main():
   pref = config.GlobalParser()
-  mpd = notify.MPD(pref.host, pref.port, pref.musicdir, pref.appname, pref.timeout)
+  mpd = notify.MPD(pref.host, pref.port, pref.musicdir, pref.appname, pref.timeout, pref.titleformat, pref.bodyformat)
 
   if pref.oneshot:
     mpd.sendnotify()

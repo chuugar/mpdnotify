@@ -10,6 +10,9 @@
 host = localhost
 port = 6600
 
+titleformat = {title}
+bodyformat = {album} ({artist})
+
 # Amount of milliseconds for which notification will be shown
 timeout = 2500
 

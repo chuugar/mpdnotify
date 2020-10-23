@@ -37,10 +37,11 @@ A few arguments can be passed to mpdnotify:
 
 * **-a / --appname** : specifies the app name for notify-send.
 * **-c / --config** : path to the configuration file.
-* **--host** : mpd's address.
+* **-h / --host** : mpd's address.
 * **-m / --musicdir** : path to mpd's music library folder.
 * **-p / --port** : mpd's server port.
 * **-o / --oneshot** : send a notification and exit immediately.
+* **-t / --timeout** : amount of milliseconds for which notification will be shown
 
 All of these arguments can be save in a configuration file, please see [`mpdnotifyrc.sample`](https://github.com/chuugar/mpdnotify/blob/master/mpdnotifyrc.sample) for further informations.
 

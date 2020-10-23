@@ -83,7 +83,7 @@ class GlobalParser(object):
 
     parser.add_argument("-a", "--appname", metavar="mpd")
     parser.add_argument("-c", "--config", metavar="mpdnotifyrc")
-    parser.add_argument("--host", metavar="localhost", type=str)
+    parser.add_argument("-h", "--host", metavar="localhost", type=str)
     parser.add_argument("-m", "--musicdir", metavar="/path/to/your/mpd/dir")
     parser.add_argument("-p", "--port", metavar="6600", type=int)
     parser.add_argument("-o", "--oneshot", action="store_true")

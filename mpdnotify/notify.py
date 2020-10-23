@@ -7,11 +7,12 @@ import pathlib
 
 
 class MPD:
-  def __init__(self, host, port, music_dir, appname="mpd"):
+  def __init__(self, host, port, music_dir, appname, timeout):
     self.host = host
     self.port = port
-    self.appname = appname
     self.music_dir = music_dir
+    self.appname = appname
+    self.timeout = timeout
 
     self.mpd = MPDClient()
     self.mpd.connect(self.host, self.port)
@@ -89,6 +90,8 @@ class MPD:
         self.appname,
         "-i",
         self.cover.__str__(),
+        "-t",
+        self.timeout.__str__(),
         self.title,
         self.body,
       ]
@@ -97,6 +100,8 @@ class MPD:
         "notify-send",
         "-a",
         self.appname,
+        "-t",
+        self.timeout.__str__(),
         self.title,
         self.body,
       ]

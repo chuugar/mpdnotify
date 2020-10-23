@@ -1,14 +1,17 @@
 # This is mpdnotifyrc.sample
 # Please copy this file at one those locations:
 #       ~/.config/mpdnotifyrc
-#       ~/.config/mpdnotify/mpdnotifyrc 
-# It also can be read from within the current working directory
+#       ~/.config/mpdnotify/mpdnotifyrc
+# It also can be read from the current working directory
 # You can also use `mpdnotify -c /path/to/your/mpdnotifyrc`
 
 [mpdnotify]
 # Points to your mpd server address and port
 host = localhost
 port = 6600
+
+# Amount of milliseconds for which notification will be shown
+timeout = 2500
 
 # What name will be parsed by libnotify (see notify-send --help)
 appname = mpd

@@ -15,7 +15,8 @@ __preferences__ = {
   "host": "localhost",
   "port": "6600",
   "appname": "mpd",
-  "musicdir": "",
+  "timeout": "2500",
+  "musicdir": ""
 }
 
 
@@ -79,14 +80,15 @@ class GlobalParser(object):
 
   def _parsing_arguments(self):
     parser = argparse.ArgumentParser()
+
     parser.add_argument("-a", "--appname", metavar="mpd")
     parser.add_argument("-c", "--config", metavar="mpdnotifyrc")
     parser.add_argument("--host", metavar="localhost", type=str)
-    parser.add_argument(
-      "-m", "--musicdir", metavar="/path/to/your/mpd/dir"
-    )
+    parser.add_argument("-m", "--musicdir", metavar="/path/to/your/mpd/dir")
     parser.add_argument("-p", "--port", metavar="6600", type=int)
     parser.add_argument("-o", "--oneshot", action="store_true")
+    parser.add_argument("-t", "--timeout", metavar="2500", type=int)
+
     return parser.parse_args()
 
   def _parsing_config(self):
@@ -112,9 +114,7 @@ class GlobalParser(object):
       # finally try to looks at the config directory
     else:
       try:
-        config_home = pathlib.Path(
-          environ.get("XDG_CONFIG_HOME")
-        ).expanduser()
+        config_home = pathlib.Path(environ.get("XDG_CONFIG_HOME")).expanduser()
       except KeyError:
         config_home = pathlib.Path("~/.config").expanduser()
       finally:
